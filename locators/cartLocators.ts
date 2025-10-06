@@ -12,6 +12,7 @@ export class CartLocators {
     readonly pageTitle: Locator;
     readonly finishShoppingButton: Locator;
     readonly thankyouMessage: Locator;
+    readonly backToHomeButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -28,5 +29,6 @@ export class CartLocators {
 
         this.finishShoppingButton = page.locator('[data-test="finish"]');
         this.thankyouMessage = page.locator('[data-test="complete-header"]');
+        this.backToHomeButton = page.locator('[data-test="back-to-products"]');
     }
 }
