@@ -1,11 +1,8 @@
-import { expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { AuthPage } from '../locators/authPage';
 
 export async function login(page: Page, username: string = "standard_user", password: string = "secret_sauce") {
-    await page.goto("https://www.saucedemo.com/");
-    
-    await page.locator('[data-test="username"]').fill(username);
-    await page.locator('[data-test="password"]').fill(password);
-    await page.locator('[data-test="login-button"]').click();
-
-    await expect(page.locator('[data-test="title"]')).toHaveText(/Products/);
+    const authObj = new AuthPage(page);   
+    await authObj.goto();
+    await authObj.login(username, password);
 }
