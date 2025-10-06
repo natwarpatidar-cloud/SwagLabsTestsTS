@@ -1,34 +1,53 @@
-import { Locator, Page } from "@playwright/test";
+import { Page } from "@playwright/test";
 
 export class CartLocators {
     readonly page: Page;
-    readonly contineuShoppingButton: Locator;
-    readonly backpackRFCButton: Locator;
-    readonly checkoutButton: Locator;
-    readonly firstName: Locator;
-    readonly lastName: Locator;
-    readonly postalCode: Locator;
-    readonly continueButton: Locator;
-    readonly pageTitle: Locator;
-    readonly finishShoppingButton: Locator;
-    readonly thankyouMessage: Locator;
-    readonly backToHomeButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
-        this.backpackRFCButton = page.locator('[data-test="remove-sauce-labs-backpack"]');
-        this.contineuShoppingButton = page.locator('[data-test="continue-shopping"]');
-        this.checkoutButton = page.locator('[data-test="checkout"]');
+    }
 
-        this.firstName = page.locator('[data-test="firstName"]');
-        this.lastName = page.locator('[data-test="lastName"]');
-        this.postalCode = page.locator('[data-test="postalCode"]');
+    getBackpackRFCButton () {
+        return this.page.locator('[data-test="remove-sauce-labs-backpack"]');
+    }
 
-        this.continueButton = page.locator('[data-test="continue"]');
-        this.pageTitle = page.locator('[data-test="title"]');
+    getContineuShoppingButton () {
+        return this.page.locator('[data-test="continue-shopping"]');
+    }
 
-        this.finishShoppingButton = page.locator('[data-test="finish"]');
-        this.thankyouMessage = page.locator('[data-test="complete-header"]');
-        this.backToHomeButton = page.locator('[data-test="back-to-products"]');
+    getCheckoutButton () {
+        return this.page.locator('[data-test="checkout"]');
+    }
+
+    getFirstName () {
+        return this.page.locator('[data-test="firstName"]');
+    }
+
+    getLastName () {
+        return this.page.locator('[data-test="lastName"]');
+    }
+
+    getPostalCode () {
+        return this.page.locator('[data-test="postalCode"]');
+    }
+
+    getContinueButton () {
+        return this.page.locator('[data-test="continue"]');
+    }   
+
+    getPageTitle () {
+        return this.page.locator('[data-test="title"]');
+    }
+
+    getFinishShoppingButton () {
+        return this.page.locator('[data-test="finish"]');
+    }
+
+    getThankyouMessage () {
+        return this.page.locator('[data-test="complete-header"]');
+    }
+
+    getBackToHomeButton () {
+        return this.page.locator('[data-test="back-to-products"]');
     }
 }

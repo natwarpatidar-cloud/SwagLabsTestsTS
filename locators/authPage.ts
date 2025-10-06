@@ -1,18 +1,38 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 
 export class AuthPage {
     readonly page: Page;
-    readonly usernameInput: Locator;
-    readonly passwordInput: Locator;
-    readonly loginButton: Locator;
-    readonly errorMessage: Locator;
 
     constructor(page: Page) {
         this.page = page;
-        this.usernameInput = page.locator('[data-test="username"]');
-        this.passwordInput = page.locator('[data-test="password"]');
-        this.loginButton = page.locator('[data-test="login-button"]');
-        this.errorMessage = page.locator('[data-test="error"]');
+    }
+
+    getUsernameInput () {
+        return this.page.locator('[data-test="username"]');;
+    }
+
+    getPasswordInput () {
+        return this.page.locator('[data-test="password"]');
+    }
+
+    getLoginButton () {
+        return this.page.locator('[data-test="login-button"]');
+    }
+
+    getErrorMessage () {
+        return this.page.locator('[data-test="error"]');
+    }
+
+    getMenuButton () {
+        return this.page.getByRole('button', { name: 'Open Menu' });
+    }
+
+    getLogoutLink () {
+        return this.page.locator('[data-test="logout-sidebar-link"]');
+    }
+
+    getPageTitle () {
+        return this.page.locator('[data-test="title"]');
     }
 
     async goto() {
@@ -20,16 +40,14 @@ export class AuthPage {
     }
 
     async login(username: string, password: string) {
-        await this.usernameInput.fill(username);
-        await this.passwordInput.fill(password);
-        await this.loginButton.click();
-        await expect(this.page.locator('[data-test="title"]')).toHaveText(/Products/);
+        await this.getUsernameInput().fill(username);
+        await this.getPasswordInput().fill(password);
+        await this.getLoginButton().click();
+        await expect(this.getPageTitle()).toHaveText(/Products/);
     }
 
     async logout() {
-        const menuButton: Locator =  this.page.getByRole('button', { name: 'Open Menu' });
-        await menuButton.click();
-        const logoutLink: Locator = this.page.locator('[data-test="logout-sidebar-link"]');
-        await logoutLink.click();
+        await this.getMenuButton().click();
+        await this.getLogoutLink().click();
     }
 }

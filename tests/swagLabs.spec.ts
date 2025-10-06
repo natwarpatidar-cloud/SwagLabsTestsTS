@@ -7,46 +7,46 @@ import { CartLocators } from "../locators/cartLocators.ts";
 
 let page: Page;
 let context;
+let authObj: AuthPage;
+let cart: CartLocators;
+let homepage: HomePageLocators;
+let inventory: InventoryLocators;
 
 test.beforeAll(async ({ browser }) => {
     context = await browser.newContext();
     page = await context.newPage();
+    authObj = new AuthPage(page);
+    cart = new CartLocators(page);
+    homepage = new HomePageLocators(page);
+    inventory = new InventoryLocators(page);
     await login(page);
 });
 
 test.afterAll(async () => {
-    const authObj = new AuthPage(page);
     await authObj.logout();
 });
 
 test("Add to Cart", async () => {
-    const homePageLocatorObj = new HomePageLocators(page);
-    const inventory = new InventoryLocators(page);
-    await inventory.backpackATCButton.click();
-    await expect(homePageLocatorObj.cartBadge).toHaveText(/1/);
+    await inventory.getBackpackATCButton().click();
+    await expect(homepage.getCartBadge()).toHaveText(/1/);
 });
 
 test("Remove Item from Cart", async () => {
-    const homePageLocatorObj = new HomePageLocators(page);
-    await homePageLocatorObj.cart.click();
+    await homepage.getCart().click();
 
-    const cart = new CartLocators(page);
-    await cart.backpackRFCButton.click();
-    await expect(homePageLocatorObj.cartBadge).toBeHidden();
-    await cart.contineuShoppingButton.click();
+    await cart.getBackpackRFCButton().click();
+    await expect(homepage.getCartBadge()).toBeHidden();
+    await cart.getContineuShoppingButton().click();
 });
 
 test("Sort Products", async () => {
-    const homepage = new HomePageLocators(page);
-    await homepage.filterButton.selectOption('lohi');
+    await homepage.getFilterButton().selectOption('lohi');
 
-    const inventory = new InventoryLocators(page);
-    await expect(inventory.cheapestItem).toContainText('$7.99');
+    await expect(inventory.getCheapestItem()).toContainText('$7.99');
 });
 
 test("Checkout flow", async () => {
-    const inventory = new InventoryLocators(page);
-    const items = inventory.inventoryItems;
+    const items = inventory.getInventoryItems();
     const addedItems = [];
     for (let i = 0; i < 3; i++) {
         const item = items.nth(i);
@@ -55,31 +55,28 @@ test("Checkout flow", async () => {
         await item.locator('[data-test^="add-to-cart"]').click();
     }
 
-    const homepage = new HomePageLocators(page);
-    await homepage.cart.click();
+    await homepage.getCart().click();
 
-    const cart = new CartLocators(page);
-    await cart.checkoutButton.click();
+    await cart.getCheckoutButton().click();
 
-    await cart.firstName.fill('Natwar');
-    await cart.lastName.fill('Patidar');
-    await cart.postalCode.fill('452001');
-    await cart.continueButton.click();
+    await cart.getFirstName().fill('Natwar');
+    await cart.getLastName().fill('Patidar');
+    await cart.getPostalCode().fill('452001');
+    await cart.getContinueButton().click();
 
-    await expect(cart.pageTitle).toHaveText(/Checkout: Overview/);
-    await cart.finishShoppingButton.click();
-    await expect(cart.thankyouMessage).toHaveText(/Thank you for your order!/);
-    await cart.backToHomeButton.click();
+    await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
+    await cart.getFinishShoppingButton().click();
+    await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
+    await cart.getBackToHomeButton().click();
 });
 
 test("Product Details Page", async () => {
-    const inventory = new InventoryLocators(page);
-    await inventory.backpack.click();
-    await expect(inventory.backToProductsButton).toHaveText(/Back to products/);
+    await inventory.getBackpack().click();
+    await expect(inventory.getBackToProductsButton()).toHaveText(/Back to products/);
 
-    await expect(inventory.backpackDescription).toBeVisible();
-    await expect(inventory.backpackPrice).toBeVisible();
-    await inventory.backToProductsButton.click();
+    await expect(inventory.getBackpackDescription()).toBeVisible();
+    await expect(inventory.getBackpackPrice()).toBeVisible();
+    await inventory.getBackToProductsButton().click();
 });
 
 // test("Cart Navigation test", async () => {
@@ -107,8 +104,7 @@ test("Product Details Page", async () => {
 // });
 
 test("Multiple Items checkout", async () => {
-    const inventory = new InventoryLocators(page);
-    const items = inventory.inventoryItems;
+    const items = inventory.getInventoryItems();
     const addedItems = [];
     for (let i = 0; i < 3; i++) {
         const item = items.nth(i);
@@ -122,59 +118,53 @@ test("Multiple Items checkout", async () => {
         }
     }
 
-    const homepage = new HomePageLocators(page);
-    await homepage.cart.click();
+    await homepage.getCart().click();
 
     for (let i = 0; i < 3; i++) {
-        const name = inventory.inventoryItemName.nth(i)
+        const name = inventory.getInventoryItemName().nth(i)
         await expect(name).toBeVisible();
     }
 
-    const cart = new CartLocators(page);
-    await cart.checkoutButton.click();
+    await cart.getCheckoutButton().click();
 
-    await cart.firstName.fill('Natwar');
-    await cart.lastName.fill('Patidar');
-    await cart.postalCode.fill('452001');
-    await cart.continueButton.click();
+    await cart.getFirstName().fill('Natwar');
+    await cart.getLastName().fill('Patidar');
+    await cart.getPostalCode().fill('452001');
+    await cart.getContinueButton().click();
 
-    await expect(cart.pageTitle).toHaveText(/Checkout: Overview/);
-    await cart.finishShoppingButton.click();
-    await expect(cart.thankyouMessage).toHaveText(/Thank you for your order!/);
-    await cart.backToHomeButton.click();
+    await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
+    await cart.getFinishShoppingButton().click();
+    await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
+    await cart.getBackToHomeButton().click();
 });
 
 test("Negative Login Test", async() => {
-    const auth = new AuthPage(page);
-    await auth.goto();
-    await auth.usernameInput.fill("natndgkdj");
-    await auth.passwordInput.fill("dfjs");
-    await auth.loginButton.click();
+    await authObj.goto();
+    await authObj.getUsernameInput().fill("natndgkdj");
+    await authObj.getPasswordInput().fill("dfjs");
+    await authObj.getLoginButton().click();
 
-    await expect(auth.errorMessage).toContainText('Epic sadface: Username and password do not match any user in this service');
+    await expect(authObj.getErrorMessage()).toContainText('Epic sadface: Username and password do not match any user in this service');
 });
 
 test('UI Elements Verification', async() => {
-    const auth = new AuthPage(page);
-    await auth.goto();
+    await authObj.goto();
 
     // Login form visibility test
-    await expect(auth.usernameInput).toBeVisible();
-    await expect(auth.passwordInput).toBeVisible();
-    const button = auth.loginButton;
+    await expect(authObj.getUsernameInput()).toBeVisible();
+    await expect(authObj.getPasswordInput()).toBeVisible();
+    const button = authObj.getLoginButton();
     await expect(button).toBeVisible();
     await expect(button).toBeEnabled();
 
     await login(page);
 
     // Home page icons visibility test
-    const homepage = new HomePageLocators(page);
-    await expect(homepage.cart).toBeVisible();
-    await expect(homepage.menuIcon).toBeVisible();
+    await expect(homepage.getCart()).toBeVisible();
+    await expect(homepage.getMenuIcon()).toBeVisible();
 
     // CHeck product title visibility
-    const inventory = new InventoryLocators(page);
-    const items = inventory.inventoryItems;
+    const items = inventory.getInventoryItems();
     for(let i = 0; i < 3; i++) {
         await expect(items.nth(i)).toBeVisible();
     }
