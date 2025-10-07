@@ -46,17 +46,8 @@ test("Sort Products", async () => {
 });
 
 test("Checkout flow", async () => {
-    const items = inventory.getInventoryItems();
-    const addedItems = [];
-    for (let i = 0; i < 3; i++) {
-        const item = items.nth(i);
-        const title = await item.locator('[data-test="inventory-item-name"]').innerText();
-        addedItems.push(title);
-        await item.locator('[data-test^="add-to-cart"]').click();
-    }
-
+    await inventory.addMultipleItems();
     await homepage.getCart().click();
-
     await cart.getCheckoutButton().click();
 
     await cart.getFirstName().fill('Natwar');
@@ -104,26 +95,10 @@ test("Product Details Page", async () => {
 // });
 
 test("Multiple Items checkout", async () => {
-    const items = inventory.getInventoryItems();
-    const addedItems = [];
-    for (let i = 0; i < 3; i++) {
-        const item = items.nth(i);
-        const title = await item.locator('[data-test="inventory-item-name"]').innerText();
-        addedItems.push(title);
-        const atcBtn = item.locator('[data-test^="add-to-cart"]');
-        if(atcBtn) {
-            await atcBtn.click();
-        } else {
-            continue;
-        }
-    }
-
+    await inventory.addMultipleItems();
     await homepage.getCart().click();
 
-    for (let i = 0; i < 3; i++) {
-        const name = inventory.getInventoryItemName().nth(i)
-        await expect(name).toBeVisible();
-    }
+    inventory.verifyAddedItems();
 
     await cart.getCheckoutButton().click();
 
@@ -164,8 +139,5 @@ test('UI Elements Verification', async() => {
     await expect(homepage.getMenuIcon()).toBeVisible();
 
     // CHeck product title visibility
-    const items = inventory.getInventoryItems();
-    for(let i = 0; i < 3; i++) {
-        await expect(items.nth(i)).toBeVisible();
-    }
+    inventory.checkIfTitleVisible();
 });

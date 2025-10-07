@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { expect, Locator, Page } from "@playwright/test";
 
 export class InventoryLocators {
     readonly page: Page;
@@ -30,5 +30,35 @@ export class InventoryLocators {
     }
     getInventoryItemName() {
         return this.page.locator('.inventory_item_name');
+    }
+
+    async addMultipleItems() {
+        const items = this.getInventoryItems();
+        let addedItems: string[] = [];
+        for (let i = 0; i < 3; i++) {
+            const item = items.nth(i);
+            const title = await item.locator('[data-test="inventory-item-name"]').innerText();
+            addedItems.push(title);
+            const atcBtn = item.locator('[data-test^="add-to-cart"]');
+            if(atcBtn) {
+                await atcBtn.click();
+            } else {
+                continue;
+            }
+        }
+    }
+
+    async verifyAddedItems() {
+        for (let i = 0; i < 3; i++) {
+            const name = this.getInventoryItemName().nth(i)
+            await expect(name).toBeVisible();
+        }
+    }
+
+    async checkIfTitleVisible() {
+        const items = this.getInventoryItems();
+        for(let i = 0; i < 3; i++) {
+            await expect(items.nth(i)).toBeVisible();
+        }
     }
 }
