@@ -26,39 +26,45 @@ test.afterAll(async () => {
     await authObj.logout();
 });
 
-test("Add to Cart", async () => {
-    await inventory.getBackpackATCButton().click();
-    await expect(homepage.getCartBadge()).toHaveText(/1/);
-});
+test("Add and remove items from cart", async() => {
+    await test.step("Add to Cart", async () => {
+        await inventory.getBackpackATCButton().click();
+        await expect(homepage.getCartBadge()).toHaveText(/1/);
+    });
 
-test("Remove Item from Cart", async () => {
-    await homepage.getCart().click();
-
-    await cart.getBackpackRFCButton().click();
-    await expect(homepage.getCartBadge()).toBeHidden();
-    await cart.getContineuShoppingButton().click();
-});
-
-test("Sort Products", async () => {
-    await homepage.getFilterButton().selectOption('lohi');
-
-    await expect(inventory.getCheapestItem()).toContainText('$7.99');
-});
+    await test.step("Remove Item from Cart", async () => {
+        await homepage.getCart().click();
+        await cart.getBackpackRFCButton().click();
+        await expect(homepage.getCartBadge()).toBeHidden();
+        await cart.getContineuShoppingButton().click();
+    });
+})
 
 test("Checkout flow", async () => {
-    await inventory.addMultipleItems();
-    await homepage.getCart().click();
-    await cart.getCheckoutButton().click();
+    await test.step("Sort Products", async () => {
+        await homepage.getFilterButton().selectOption('lohi');
+        await expect(inventory.getCheapestItem()).toContainText('$7.99');
+    });
 
-    await cart.getFirstName().fill('Natwar');
-    await cart.getLastName().fill('Patidar');
-    await cart.getPostalCode().fill('452001');
-    await cart.getContinueButton().click();
+    await test.step("Add multiple items to cart", async () => {
+        await inventory.addMultipleItems();
+        await homepage.getCart().click();
+    });
 
-    await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
-    await cart.getFinishShoppingButton().click();
-    await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
-    await cart.getBackToHomeButton().click();
+    await test.step("Fill in checkout information", async () => {
+        await cart.getCheckoutButton().click();
+        await cart.getFirstName().fill('Natwar');
+        await cart.getLastName().fill('Patidar');
+        await cart.getPostalCode().fill('452001');
+        await cart.getContinueButton().click();
+    });
+
+    await test.step("Verify checkout overview and complete order", async () => {
+        await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
+        await cart.getFinishShoppingButton().click();
+        await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
+        await cart.getBackToHomeButton().click();
+    });
 });
 
 test("Product Details Page", async () => {
@@ -94,24 +100,24 @@ test("Product Details Page", async () => {
 //     await expect(homepage.pageTitle).toHaveText(/Products/);
 // });
 
-test("Multiple Items checkout", async () => {
-    await inventory.addMultipleItems();
-    await homepage.getCart().click();
+// test("Multiple Items checkout", async () => {
+//     await inventory.addMultipleItems();
+//     await homepage.getCart().click();
 
-    inventory.verifyAddedItems();
+//     inventory.verifyAddedItems();
 
-    await cart.getCheckoutButton().click();
+//     await cart.getCheckoutButton().click();
 
-    await cart.getFirstName().fill('Natwar');
-    await cart.getLastName().fill('Patidar');
-    await cart.getPostalCode().fill('452001');
-    await cart.getContinueButton().click();
+//     await cart.getFirstName().fill('Natwar');
+//     await cart.getLastName().fill('Patidar');
+//     await cart.getPostalCode().fill('452001');
+//     await cart.getContinueButton().click();
 
-    await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
-    await cart.getFinishShoppingButton().click();
-    await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
-    await cart.getBackToHomeButton().click();
-});
+//     await expect(cart.getPageTitle()).toHaveText(/Checkout: Overview/);
+//     await cart.getFinishShoppingButton().click();
+//     await expect(cart.getThankyouMessage()).toHaveText(/Thank you for your order!/);
+//     await cart.getBackToHomeButton().click();
+// });
 
 test("Negative Login Test", async() => {
     await authObj.goto();

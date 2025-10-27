@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 
 export class InventoryLocators {
     readonly page: Page;
@@ -42,8 +42,6 @@ export class InventoryLocators {
             const atcBtn = item.locator('[data-test^="add-to-cart"]');
             if(atcBtn) {
                 await atcBtn.click();
-            } else {
-                continue;
             }
         }
     }
